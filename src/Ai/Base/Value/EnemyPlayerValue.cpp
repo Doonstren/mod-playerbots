@@ -18,18 +18,19 @@ bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
 
     bool inCannon = botAI->IsInVehicle(false, true);
     Player* enemy = dynamic_cast<Player*>(unit);
-    if (enemy && botAI->IsOpposing(enemy) && enemy->IsPvP() &&
+    // Custom: trust server-side hostility (IsHostileTo honors FFA-PvP zones
+    // like Gurubashi Arena, duels and BG teams, unlike IsOpposing which only
+    // compares faction-by-race). !IsCharmed() guards against attacking
+    // mind-controlled raid allies (Yogg-Saron, Kael'thas).
+    if (enemy && bot->IsHostileTo(enemy) && enemy->IsPvP() && !enemy->IsCharmed() &&
         !sPlayerbotAIConfig.IsPvpProhibited(enemy->GetZoneId(), enemy->GetAreaId()) &&
         !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NON_ATTACKABLE_2) &&
         ((inCannon || !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))) &&
         /*!enemy->HasStealthAura() && !enemy->HasInvisibilityAura()*/ enemy->CanSeeOrDetect(bot) &&
         !(enemy->HasSpiritOfRedemptionAura()))
     {
-        // If with master, only attack if master is PvP flagged
-        Player* master = botAI->GetMaster();
-        if (master && !master->IsPvP() && !master->IsFFAPvP())
-            return false;
-
+        // Custom: master-PvP gate removed intentionally ??? we want bots to
+        // fight each other on FFA arenas regardless of the master's flag.
         return true;
     }
 
