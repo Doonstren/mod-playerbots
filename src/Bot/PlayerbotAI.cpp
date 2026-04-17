@@ -3194,7 +3194,10 @@ bool PlayerbotAI::CanCastSpell(uint32 spellid, Unit* target, bool checkHasSpell,
         if (pet->HasSpell(spellid))
             return true;
 
-    if (checkHasSpell && !bot->HasSpell(spellid))
+    // Custom: Duel (7266) is an NPC-style command spell, never learned into
+    // the bot's spellbook, but RpgSubActions.cpp:488 legitimately requests
+    // it to trigger bot-vs-bot duels. Exempt it from the HasSpell gate.
+    if (checkHasSpell && !bot->HasSpell(spellid) && spellid != 7266)
     {
         if (!sPlayerbotAIConfig.logInGroupOnly || (bot->GetGroup() && HasRealPlayerMaster()))
         {
