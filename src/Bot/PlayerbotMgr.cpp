@@ -1603,6 +1603,13 @@ void PlayerbotMgr::OnPlayerLogin(Player* player)
     if (!player)
         return;
 
+    // Custom: playerbots log in with fake sessions whose locale falls back to
+    // enUS. Counting their votes in PlayerbotTextMgr::AddLocalePriority swamps
+    // any single real player's locale ??? so bots would force English texts
+    // even on a Russian (ruRU) client. Exclude bots from the vote.
+    if (GET_PLAYERBOT_AI(player))
+        return;
+
     WorldSession* session = player->GetSession();
     if (!session)
     {
