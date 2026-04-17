@@ -29,8 +29,15 @@ bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
         /*!enemy->HasStealthAura() && !enemy->HasInvisibilityAura()*/ enemy->CanSeeOrDetect(bot) &&
         !(enemy->HasSpiritOfRedemptionAura()))
     {
-        // Custom: master-PvP gate removed intentionally ??? we want bots to
-        // fight each other on FFA arenas regardless of the master's flag.
+        // Custom: keep the master-PvP safety gate (so bots don't auto-engage
+        // open-world PvP while the spectator is unflagged), but bypass it
+        // when the bot itself stands in an FFA-PvP zone (Gurubashi Arena).
+        // There the whole point is a free-for-all fight independent of the
+        // master's flag.
+        Player* master = botAI->GetMaster();
+        if (master && !master->IsPvP() && !master->IsFFAPvP() && !bot->IsFFAPvP())
+            return false;
+
         return true;
     }
 
