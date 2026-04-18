@@ -20,6 +20,16 @@ bool AttackEnemyPlayerAction::isUseful()
     if (PlayerHasFlag::IsCapturingFlag(bot))
         return false;
 
+    // Custom: FFA areas (Gurubashi Arena, etc.) ship in the default
+    // AiPlayerbot.PvpProhibited*Ids lists, which would otherwise kill the
+    // +pvp strategy entirely in the one place it's most wanted. When the
+    // core has already tagged the bot with UNIT_BYTE2_FLAG_FFA_PVP, the
+    // zone itself authorizes free-for-all combat, so bypass the config
+    // gate. Safe for sanctuaries (Dalaran/Shattrath) ??? the FFA flag is
+    // never set there.
+    if (bot->IsFFAPvP())
+        return true;
+
     return !sPlayerbotAIConfig.IsPvpProhibited(bot->GetZoneId(), bot->GetAreaId());
 }
 

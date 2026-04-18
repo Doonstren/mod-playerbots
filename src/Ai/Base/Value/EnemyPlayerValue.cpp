@@ -21,8 +21,12 @@ bool NearestEnemyPlayersValue::AcceptUnit(Unit* unit)
     // Custom: trust server-side hostility (IsHostileTo honors FFA-PvP zones
     // like Gurubashi Arena, duels and BG teams, unlike IsOpposing which only
     // compares faction-by-race). !IsCharmed() guards against attacking
-    // mind-controlled raid allies (Yogg-Saron, Kael'thas).
-    if (enemy && bot->IsHostileTo(enemy) && enemy->IsPvP() && !enemy->IsCharmed() &&
+    // mind-controlled raid allies (Yogg-Saron, Kael'thas). IsFFAPvP() is
+    // required alongside IsPvP() because the core only sets
+    // UNIT_BYTE2_FLAG_FFA_PVP in FFA areas (e.g. Gurubashi) and leaves the
+    // regular PvP flag alone ??? checking only IsPvP() would skip arena targets.
+    if (enemy && bot->IsHostileTo(enemy) && (enemy->IsPvP() || enemy->IsFFAPvP()) &&
+        !enemy->IsCharmed() &&
         !sPlayerbotAIConfig.IsPvpProhibited(enemy->GetZoneId(), enemy->GetAreaId()) &&
         !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NON_ATTACKABLE_2) &&
         ((inCannon || !enemy->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE))) &&
