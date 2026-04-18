@@ -1621,8 +1621,11 @@ void PlayerbotMgr::OnPlayerLogin(Player* player)
     LocaleConstant const databaseLocale = session->GetSessionDbLocaleIndex();
 
     // For bot texts (DB-driven), prefer the database locale with a safe fallback.
+    // Custom: bound by TOTAL_LOCALES (9) instead of MAX_LOCALES (8) so that
+    // ruRU (locale index 8) votes get through to PlayerbotTextMgr rather
+    // than being silently downgraded to enUS here.
     LocaleConstant usedLocale = databaseLocale;
-    if (usedLocale >= MAX_LOCALES)
+    if (usedLocale >= TOTAL_LOCALES)
         usedLocale = LOCALE_enUS; // fallback
 
     // set locale priority for bot texts

@@ -38,7 +38,13 @@ void PlayerbotTextMgr::LoadBotTexts()
             text[0] = fields[1].Get<std::string>();
             uint8 sayType = fields[2].Get<uint8>();
             uint8 replyType = fields[3].Get<uint8>();
-            for (uint8 i = 1; i < MAX_LOCALES; ++i)
+            // Custom: iterate through TOTAL_LOCALES (9) instead of
+            // MAX_LOCALES (8). The SELECT in PLAYERBOTS_SEL_TEXT pulls
+            // text_loc1..text_loc8 (8 locale columns). MAX_LOCALES stops
+            // at 7, so text_loc8 (ruRU, locale index 8) was never read ???
+            // the reason Russian bot lines never showed up regardless of
+            // client locale.
+            for (uint8 i = 1; i < TOTAL_LOCALES; ++i)
             {
                 text[i] = fields[i + 3].Get<std::string>();
             }
@@ -192,9 +198,12 @@ bool PlayerbotTextMgr::GetBotText(std::string name, std::string& text, std::map<
 
 void PlayerbotTextMgr::AddLocalePriority(uint32 locale)
 {
-    if (locale >= MAX_LOCALES)
+    // Custom: bound by TOTAL_LOCALES (9) rather than MAX_LOCALES (8) so
+    // that ruRU (locale index 8) is a valid vote. Core's MAX_LOCALES is a
+    // legacy DB-array bound; mod-local storage is sized for TOTAL_LOCALES.
+    if (locale >= TOTAL_LOCALES)
     {
-        LOG_WARN("playerbots", "Ignoring locale {} for bot texts because it exceeds MAX_LOCALES ({})", locale, MAX_LOCALES - 1);
+        LOG_WARN("playerbots", "Ignoring locale {} for bot texts because it exceeds TOTAL_LOCALES ({})", locale, TOTAL_LOCALES - 1);
         return;
     }
 
@@ -212,7 +221,7 @@ uint32 PlayerbotTextMgr::GetLocalePriority()
     }
 
     uint32 topLocale = 0;
-    for (uint8 i = 0; i < MAX_LOCALES; ++i)
+    for (uint8 i = 0; i < TOTAL_LOCALES; ++i)
     {
         if (botTextLocalePriority[i] > botTextLocalePriority[topLocale])
             topLocale = i;
@@ -223,7 +232,7 @@ uint32 PlayerbotTextMgr::GetLocalePriority()
 
 void PlayerbotTextMgr::ResetLocalePriority()
 {
-    for (uint8 i = 0; i < MAX_LOCALES; ++i)
+    for (uint8 i = 0; i < TOTAL_LOCALES; ++i)
     {
         botTextLocalePriority[i] = 0;
     }

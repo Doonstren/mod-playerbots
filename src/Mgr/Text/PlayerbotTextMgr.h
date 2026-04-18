@@ -87,7 +87,11 @@ public:
 private:
     PlayerbotTextMgr()
     {
-        for (uint8 i = 0; i < MAX_LOCALES; ++i)
+        // Custom: use TOTAL_LOCALES (9) instead of MAX_LOCALES (8) so that
+        // ruRU (locale index 8) is representable. The core keeps
+        // MAX_LOCALES=8 for legacy-array compat; mod-local storage has no
+        // such constraint.
+        for (uint8 i = 0; i < TOTAL_LOCALES; ++i)
         {
             botTextLocalePriority[i] = 0;
         }
@@ -102,7 +106,7 @@ private:
 
     std::map<std::string, std::vector<BotTextEntry>> botTexts;
     std::map<std::string, uint32> botTextChance;
-    uint32 botTextLocalePriority[MAX_LOCALES];
+    uint32 botTextLocalePriority[TOTAL_LOCALES];
 };
 
 #endif
