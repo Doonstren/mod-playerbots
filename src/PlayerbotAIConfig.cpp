@@ -189,6 +189,7 @@ bool PlayerbotAIConfig::Initialize()
         unobtainableItems);
 
     botAutologin = sConfigMgr->GetOption<bool>("AiPlayerbot.BotAutologin", false);
+    botTextLocale = sConfigMgr->GetOption<int32>("AiPlayerbot.BotTextLocale", -1);
     randomBotAutologin = sConfigMgr->GetOption<bool>("AiPlayerbot.RandomBotAutologin", true);
     minRandomBots = sConfigMgr->GetOption<int32>("AiPlayerbot.MinRandomBots", 500);
     maxRandomBots = sConfigMgr->GetOption<int32>("AiPlayerbot.MaxRandomBots", 500);

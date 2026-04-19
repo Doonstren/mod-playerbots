@@ -105,6 +105,7 @@ public:
     uint32 openGoSpell;
     bool randomBotAutologin;
     bool botAutologin;
+    int32 botTextLocale;
     std::string randomBotMapsAsString;
     float probTeleToBankers;
     bool enableWeightTeleToCityBankers;

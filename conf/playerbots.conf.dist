@@ -84,6 +84,23 @@
 # Enable or disable Playerbots module
 AiPlayerbot.Enabled = 1
 
+#    AiPlayerbot.BotTextLocale
+#        Description: Force playerbots to use a specific locale for text, bypassing the client-voting system.
+#        Valid values:
+#        -1 = Disabled (Bots use the locale of the currently logged-in players)
+#         0 = enUS/enGB
+#         1 = koKR
+#         2 = frFR
+#         3 = deDE
+#         4 = zhCN
+#         5 = zhTW
+#         6 = esES
+#         7 = esMX
+#         8 = ruRU
+#        Default: -1
+#
+AiPlayerbot.BotTextLocale = -1
+
 # Enable randombot system
 AiPlayerbot.RandomBotAutologin = 1
 
