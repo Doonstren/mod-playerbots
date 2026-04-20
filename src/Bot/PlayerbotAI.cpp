@@ -2588,12 +2588,23 @@ const AreaTableEntry* PlayerbotAI::GetCurrentZone()
         bot->GetMap()->GetZoneId(bot->GetPhaseMask(), bot->GetPositionX(), bot->GetPositionY(), bot->GetPositionZ()));
 }
 
+uint8 PlayerbotAI::GetLocale()
+{
+    // If config overrides locale, use it
+    if (sPlayerbotAIConfig.botTextLocale >= 0 && sPlayerbotAIConfig.botTextLocale < TOTAL_LOCALES)
+        return static_cast<uint8>(sPlayerbotAIConfig.botTextLocale);
+
+    // Otherwise use server default DBC locale
+    return sWorld->GetDefaultDbcLocale();
+}
+
 std::string PlayerbotAI::GetLocalizedAreaName(const AreaTableEntry* entry)
 {
     std::string name;
     if (entry)
     {
-        name = entry->area_name[sWorld->GetDefaultDbcLocale()];
+        uint8 locale = GetLocale();
+        name = entry->area_name[locale];
         if (name.empty())
             name = entry->area_name[LOCALE_enUS];
     }
@@ -2604,9 +2615,10 @@ std::string PlayerbotAI::GetLocalizedAreaName(const AreaTableEntry* entry)
 std::string PlayerbotAI::GetLocalizedCreatureName(uint32 entry)
 {
     std::string name;
+    uint8 locale = GetLocale();
     const CreatureLocale* cl = sObjectMgr->GetCreatureLocale(entry);
     if (cl)
-        ObjectMgr::GetLocaleString(cl->Name, sWorld->GetDefaultDbcLocale(), name);
+        ObjectMgr::GetLocaleString(cl->Name, locale, name);
     if (name.empty())
     {
         CreatureTemplate const* ct = sObjectMgr->GetCreatureTemplate(entry);
@@ -2619,9 +2631,10 @@ std::string PlayerbotAI::GetLocalizedCreatureName(uint32 entry)
 std::string PlayerbotAI::GetLocalizedGameObjectName(uint32 entry)
 {
     std::string name;
+    uint8 locale = GetLocale();
     const GameObjectLocale* gl = sObjectMgr->GetGameObjectLocale(entry);
     if (gl)
-        ObjectMgr::GetLocaleString(gl->Name, sWorld->GetDefaultDbcLocale(), name);
+        ObjectMgr::GetLocaleString(gl->Name, locale, name);
     if (name.empty())
     {
         GameObjectTemplate const* gt = sObjectMgr->GetGameObjectTemplate(entry);

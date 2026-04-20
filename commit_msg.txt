@@ -1,0 +1,10 @@
+feat(Core/Localization): Full localization support for bot chat messages
+
+- Add PlayerbotAI::GetLocale() to respect AiPlayerbot.BotTextLocale config
+- Update GetLocalizedCreatureName/AreaName/GameObjectName to use GetLocale()
+- Fix BroadcastKill() to use localized creature names
+- Update FormatClass/FormatRace to use DBC ChrClasses/ChrRaces with localization
+- Update FormatQuest/FormatItem/FormatSpell/FormatGameobject to use GetLocale()
+- Update FormatWorldEntry to use localized names
+
+Closes: issue with English names in guild chat (Nightbane Worgen, Duskwood)

@@ -451,7 +451,7 @@ bool BroadcastHelper::BroadcastKill(PlayerbotAI* ai, Player* bot, Creature *crea
     if (!sPlayerbotAIConfig.enableBroadcasts)
         return false;
     std::map<std::string, std::string> placeholders;
-    placeholders["%victim_name"] = creature->GetName();
+    placeholders["%victim_name"] = ai->GetLocalizedCreatureName(creature->GetEntry());
     AreaTableEntry const* current_area = ai->GetCurrentArea();
     AreaTableEntry const* current_zone = ai->GetCurrentZone();
     placeholders["%area_name"] = current_area ? ai->GetLocalizedAreaName(current_area) : PlayerbotTextMgr::instance().GetBotText("string_unknown_area");

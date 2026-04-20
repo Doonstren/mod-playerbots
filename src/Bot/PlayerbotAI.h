@@ -452,6 +452,7 @@ public:
     static std::string GetLocalizedAreaName(const AreaTableEntry* entry);
     static std::string GetLocalizedCreatureName(uint32 entry);
     static std::string GetLocalizedGameObjectName(uint32 entry);
+    static uint8 GetLocale();
     bool TellMaster(std::ostringstream& stream, PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL);
     bool TellMaster(std::string const text, PlayerbotSecurityLevel securityLevel = PLAYERBOT_SECURITY_ALLOW_ALL);
     bool TellMasterNoFacing(std::ostringstream& stream,

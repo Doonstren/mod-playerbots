@@ -7,6 +7,7 @@
 
 #include "AiFactory.h"
 #include "Common.h"
+#include "DBCStores.h"
 #include "ItemTemplate.h"
 #include "ObjectMgr.h"
 #include "Playerbots.h"
@@ -361,9 +362,10 @@ std::string const ChatHelper::FormatQuest(Quest const* quest)
     std::ostringstream out;
     QuestLocale const* locale = sObjectMgr->GetQuestLocale(quest->GetQuestId());
     std::string questTitle;
+    uint8 loc = PlayerbotAI::GetLocale();
 
-    if (locale && locale->Title.size() > sWorld->GetDefaultDbcLocale())
-        questTitle = locale->Title[sWorld->GetDefaultDbcLocale()];
+    if (locale && locale->Title.size() > loc)
+        questTitle = locale->Title[loc];
 
     if (questTitle.empty())
         questTitle = quest->GetTitle();
@@ -375,40 +377,34 @@ std::string const ChatHelper::FormatQuest(Quest const* quest)
 std::string const ChatHelper::FormatGameobject(GameObject* go)
 {
     std::ostringstream out;
+    uint8 loc = PlayerbotAI::GetLocale();
     out << "|cFFFFFF00|Hfound:" << go->GetGUID().GetRawValue() << ":" << go->GetEntry() << ":"
-        << "|h[" << go->GetNameForLocaleIdx(sWorld->GetDefaultDbcLocale()) << "]|h|r";
+        << "|h[" << go->GetNameForLocaleIdx(loc) << "]|h|r";
     return out.str();
 }
 
 std::string const ChatHelper::FormatWorldobject(WorldObject* wo)
 {
     std::ostringstream out;
+    uint8 loc = PlayerbotAI::GetLocale();
     out << "|cFFFFFF00|Hfound:" << wo->GetGUID().GetRawValue() << ":" << wo->GetEntry() << ":"
         << "|h[";
-    out << (wo->ToGameObject() ? ((GameObject*)wo)->GetNameForLocaleIdx(sWorld->GetDefaultDbcLocale())
-                               : wo->GetNameForLocaleIdx(sWorld->GetDefaultDbcLocale()))
+    out << (wo->ToGameObject() ? ((GameObject*)wo)->GetNameForLocaleIdx(loc)
+        : wo->GetNameForLocaleIdx(loc))
         << "]|h|r";
     return out.str();
 }
 
 std::string const ChatHelper::FormatWorldEntry(int32 entry)
 {
-    CreatureTemplate const* cInfo = nullptr;
-    GameObjectTemplate const* gInfo = nullptr;
-
-    if (entry > 0)
-        cInfo = sObjectMgr->GetCreatureTemplate(entry);
-    else
-        gInfo = sObjectMgr->GetGameObjectTemplate(entry * -1);
-
     std::ostringstream out;
     out << "|cFFFFFF00|Hentry:" << abs(entry) << ":"
         << "|h[";
 
-    if (entry < 0 && gInfo)
-        out << gInfo->name;
-    else if (entry > 0 && cInfo)
-        out << cInfo->Name;
+    if (entry > 0)
+        out << PlayerbotAI::GetLocalizedCreatureName(entry);
+    else if (entry < 0)
+        out << PlayerbotAI::GetLocalizedGameObjectName(entry * -1);
     else
         out << "unknown";
 
@@ -419,8 +415,9 @@ std::string const ChatHelper::FormatWorldEntry(int32 entry)
 std::string const ChatHelper::FormatSpell(SpellInfo const* spellInfo)
 {
     std::ostringstream out;
-    std::string spellName = spellInfo->SpellName[sWorld->GetDefaultDbcLocale()] ?
-        spellInfo->SpellName[sWorld->GetDefaultDbcLocale()] : spellInfo->SpellName[LOCALE_enUS];
+    uint8 loc = PlayerbotAI::GetLocale();
+    std::string spellName = spellInfo->SpellName[loc] ?
+        spellInfo->SpellName[loc] : spellInfo->SpellName[LOCALE_enUS];
     out << "|cffffffff|Hspell:" << spellInfo->Id << "|h[" << spellName << "]|h|r";
     return out.str();
 }
@@ -432,9 +429,10 @@ std::string const ChatHelper::FormatItem(ItemTemplate const* proto, uint32 count
 
     std::string itemName;
     const ItemLocale* locale = sObjectMgr->GetItemLocale(proto->ItemId);
+    uint8 loc = PlayerbotAI::GetLocale();
 
-    if (locale && locale->Name.size() > sWorld->GetDefaultDbcLocale())
-        itemName = locale->Name[sWorld->GetDefaultDbcLocale()];
+    if (locale && locale->Name.size() > loc)
+        itemName = locale->Name[loc];
 
     if (itemName.empty())
         itemName = proto->Name1;
@@ -627,9 +625,35 @@ std::string const ChatHelper::FormatClass(Player* player, int8 spec)
     return out.str();
 }
 
-std::string const ChatHelper::FormatClass(uint8 cls) { return classes[cls]; }
+std::string const ChatHelper::FormatClass(uint8 cls)
+{
+    ChrClassesEntry const* classEntry = sChrClassesStore.LookupEntry(cls);
+    if (classEntry)
+    {
+        uint8 loc = PlayerbotAI::GetLocale();
+        std::string name = classEntry->name[loc];
+        if (!name.empty())
+            return name;
+        // Fallback to English
+        return classEntry->name[LOCALE_enUS];
+    }
+    return classes[cls]; // Fallback to hardcoded
+}
 
-std::string const ChatHelper::FormatRace(uint8 race) { return races[race]; }
+std::string const ChatHelper::FormatRace(uint8 race)
+{
+    ChrRacesEntry const* raceEntry = sChrRacesStore.LookupEntry(race);
+    if (raceEntry)
+    {
+        uint8 loc = PlayerbotAI::GetLocale();
+        std::string name = raceEntry->name[loc];
+        if (!name.empty())
+            return name;
+        // Fallback to English
+        return raceEntry->name[LOCALE_enUS];
+    }
+    return races[race]; // Fallback to hardcoded
+}
 
 uint32 ChatHelper::parseSkill(std::string const text)
 {
