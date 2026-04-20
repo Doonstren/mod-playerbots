@@ -2594,7 +2594,14 @@ uint8 PlayerbotAI::GetLocale()
     if (sPlayerbotAIConfig.botTextLocale >= 0 && sPlayerbotAIConfig.botTextLocale < TOTAL_LOCALES)
         return static_cast<uint8>(sPlayerbotAIConfig.botTextLocale);
 
-    // Otherwise use server default DBC locale
+    // Follow the same locale PlayerbotTextMgr picks for bot phrases so that
+    // placeholders (NPC / zone / class / race / quest / item names) stay in
+    // the same language as the surrounding text. sWorld->GetDefaultDbcLocale()
+    // is usually pinned to enUS regardless of the logged-in client.
+    uint32 voted = PlayerbotTextMgr::instance().GetLocalePriority();
+    if (voted < TOTAL_LOCALES)
+        return static_cast<uint8>(voted);
+
     return sWorld->GetDefaultDbcLocale();
 }
 
