@@ -19,6 +19,7 @@ bool LootRollAction::Execute(Event /*event*/)
     if (!group)
         return false;
 
+    bool processed = false;
     std::vector<Roll*> rolls = group->GetRolls();
     for (Roll*& roll : rolls)
     {
@@ -102,11 +103,11 @@ bool LootRollAction::Execute(Event /*event*/)
                 group->CountRollVote(bot->GetGUID(), guid, vote);
                 break;
         }
-        // One item at a time
-        return true;
+
+        processed = true;
     }
 
-    return false;
+    return processed;
 }
 
 RollVote LootRollAction::CalculateRollVote(ItemTemplate const* proto, ItemUsage usage)
@@ -143,7 +144,7 @@ RollVote LootRollAction::CalculateRollVote(ItemTemplate const* proto, ItemUsage 
     return StoreLootAction::IsLootAllowed(proto->ItemId, GET_PLAYERBOT_AI(bot)) ? needVote : PASS;
 }
 
-bool MasterLootRollAction::isUseful() { return !botAI->HasActivePlayerMaster(); }
+bool MasterLootRollAction::isUseful() { return true; }
 
 bool MasterLootRollAction::Execute(Event event)
 {
