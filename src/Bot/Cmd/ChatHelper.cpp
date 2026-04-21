@@ -379,7 +379,7 @@ std::string const ChatHelper::FormatGameobject(GameObject* go)
     std::ostringstream out;
     uint8 loc = PlayerbotAI::GetLocale();
     out << "|cFFFFFF00|Hfound:" << go->GetGUID().GetRawValue() << ":" << go->GetEntry() << ":"
-        << "|h[" << go->GetNameForLocaleIdx((LocaleConstant)loc) << "]|h|r";
+        << "|h[" << go->GetNameForLocaleIdx(loc) << "]|h|r";
     return out.str();
 }
 
@@ -389,8 +389,8 @@ std::string const ChatHelper::FormatWorldobject(WorldObject* wo)
     uint8 loc = PlayerbotAI::GetLocale();
     out << "|cFFFFFF00|Hfound:" << wo->GetGUID().GetRawValue() << ":" << wo->GetEntry() << ":"
         << "|h[";
-    out << (wo->ToGameObject() ? ((GameObject*)wo)->GetNameForLocaleIdx((LocaleConstant)loc)
-        : wo->GetNameForLocaleIdx((LocaleConstant)loc))
+    out << (wo->ToGameObject() ? ((GameObject*)wo)->GetNameForLocaleIdx(loc)
+        : wo->GetNameForLocaleIdx(loc))
         << "]|h|r";
     return out.str();
 }
