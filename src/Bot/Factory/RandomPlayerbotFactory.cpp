@@ -494,6 +494,9 @@ void RandomPlayerbotFactory::CreateRandomBots()
         PlayerbotsDatabase.Execute("DELETE FROM playerbots_db_store WHERE guid NOT IN (SELECT guid FROM " + characterDBName + ".characters WHERE account IN (SELECT id FROM " + loginDBName + ".account WHERE username NOT LIKE '{}%%'))",
             sPlayerbotAIConfig.randomBotAccountPrefix.c_str());
 
+        // Clean up orphaned entries in playerbots_inventory_baseline
+        PlayerbotsDatabase.Execute("DELETE FROM playerbots_inventory_baseline WHERE guid NOT IN (SELECT guid FROM " + characterDBName + ".characters)");
+
         // Clean up orphaned records in character-related tables
         CharacterDatabase.Execute("DELETE FROM arena_team_member WHERE guid NOT IN (SELECT guid FROM characters)");
         CharacterDatabase.Execute("DELETE FROM arena_team WHERE arenaTeamId NOT IN (SELECT arenaTeamId FROM arena_team_member)");

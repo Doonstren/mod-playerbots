@@ -6,6 +6,8 @@
 #ifndef _PLAYERBOT_SELLACTION_H
 #define _PLAYERBOT_SELLACTION_H
 
+#include <unordered_set>
+
 #include "InventoryAction.h"
 
 class FindItemVisitor;
@@ -20,6 +22,12 @@ public:
     bool Execute(Event event) override;
     void Sell(FindItemVisitor* visitor);
     void Sell(Item* item);
+    bool Destroy(Item* item);
+
+    bool SaveBaseline();
+    bool ClearBaseline();
+    void ListBaseline();
+    void LoadBaseline(std::unordered_set<uint32>& out);
 };
 
 #endif
